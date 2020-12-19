@@ -1,3 +1,5 @@
+#program updated and needed to upload github. new app id added. 01:23 19.12.2020
+
 import requests
 import sqlite3
 import json
@@ -38,39 +40,27 @@ def addtoDB(db,ids):
 			#else:
 			#	print("add id: "+str(db["response"]["items"][i]['id'])+" at app_id= "+ids+" skipped")
 	except Exception as e:
-		print("except a add to db: "+str(e))
+		print("except a add to db, maybe token not valid, please try to change him or delete datebase file: "+str(e))
 
 #временная база 
-massapps={
-'7362610':{
-'status_id':'8',
-'access_token':""
-},
-'7670023':{
-'status_id':'161',
-'access_token':""
-},
-'7622189':{
-'status_id':'121',
-'access_token':""
-},
-'7664915':{
-'status_id':'149',
-'access_token':""
-},
-'7641157':{
-'status_id':'106',
-'access_token':""
-}
-} 
+massapps={}
 #id приложений
-app_ids=['7362610','7670023','7622189','7664915','7641157']
+try:
+	with open('appids.txt', 'r') as f:
+		app_ids = f.read().splitlines()
+except Exception as e:
+	print(e)
+	app_ids=['7362610']
+	
+for i in app_ids:
+	massapps[i]={'access_token':''}
+
+
 def post(ids):
 	print("ids to get list= "+ids)
 	payload={
 	'api_id':ids,
 	'access_token':massapps[ids]['access_token'],
-	'status_id':massapps[ids]['status_id'],
 	'request_id':'7',
 	'method':'status.getImageList',
 	'format':'json',
@@ -135,9 +125,35 @@ def set(status_id):
 #except Exception as e:
 #	print("except a json format: "+e)
 
+
 conn=sqlite3.connect('vk_status.getImageList.db')
 c=conn.cursor()
 
+
+choise='0'
+update_tokens='0'
+
+
+settings=input("открыть отладочное меню?(y/n)")
+if settings=='y':
+	print('1. вы хотите обновить токены?')
+	print('2. вы хотите сбросить список таблицы?')
+	print('3. вы хотите сбросить персональные данные?(все сохраненные токены)')
+	print('0. выход')
+	choise=input()
+if choise=='1':
+	update_tokens='1'
+elif choise=='2':
+	try:
+		c.execute('''DROP TABLE IF EXISTS 'Base';''')
+	except Exception as e:
+		print("table reset failed",e)
+elif choise=='3':
+	try:
+		c.execute('''DROP TABLE IF EXISTS 'personal';''')
+	except Exception as e:
+		print("personal info reset failed",e)
+		
 try:
 	
 	c.execute('''create table if not exists "personal" (
@@ -160,7 +176,7 @@ for i in range(0, len(app_ids)):
 		time_d=-1
 		time_m=-1
 
-	if ((not is_findDB_exists('personal', 'app_id',app_ids[i])) or not (str(time.day)==time_d and time_m==str(time.month))):
+	if ((not is_findDB_exists('personal', 'app_id',app_ids[i])) or not (str(time.day)==time_d and time_m==str(time.month)) or update_tokens=='1'):
 		print('\n \n У вас истек или не обнаружен токен приложения: '+str(app_ids[i])+' требуется его получение, сейчас будет написана сыллка, вы должны раздрешить приложению доступ,потом когда будет написано, что нельзя никому её отправлять, скопируйте её сюда(это абсолютно безопасно, можете проверить исходник, этот файл). К сожалению токен живет 24 часа, по этому его переодически придется обновлять:( \n ')
 		print('https://oauth.vk.com/authorize?client_id='+str(app_ids[i])+'&scope=1024&redirect_uri=https://oauth.vk.com/blank.html&display=page&response_type=token&revoke=1 \n')
 		re=input('Вставте полученную ссылку: ')
@@ -192,23 +208,24 @@ if input("Мне проверить новые эмодзи?(если запус
 #db=post(app_ids[0])
 #print(db)
 print('Список: ')
-
-c.execute("""SELECT * from 'base'""")
-records = c.fetchall()
-print("Всего строк:  ", len(records))
-print("Вывод каждой строки \n")
-for row in records:
-	print("ID:", row[0], " Имя:", row[1])
-
-print("\n\n В списке присудствует пустые имена, это значит, что в запросе имя тоже было пустое, потестируйте, как будет выглядеть(в базе данных есть ссылки на картинки эмодзи, база на sqlite3) \n\n")
-
+try:
+	c.execute("""SELECT * from 'base'""")
+	records = c.fetchall()
+	print("Всего строк:  ", len(records))
+	print("Вывод каждой строки \n")
+	for row in records:
+		print("ID:", row[0], " Имя:", row[1])
+	print("\n\n В списке присудствует пустые имена, это значит, что в запросе имя тоже было пустое, потестируйте, как будет выглядеть(в базе данных есть ссылки на картинки эмодзи, база на sqlite3) \n\n")
+	
+except Exception as e:
+	print("ошибка вывода списка, скорее всего он не создан. текст ошибки:",e)
 
 
 try:
 	set(input("какой Id хотите поставить? (Выберите из списка): "))
 	pass
 except Exception as e:
-	print("По какой то причине мы не смогли установить id, если это был ваш первый запуск, то попробуйте снова запустить, вот лог ошибки: "+str(e))
+	print("По какой то причине мы не смогли установить id, если это был ваш первый запуск, то попробуйте снова запустить, вот текст ошибки: "+str(e))
 
 conn.commit()
 
@@ -216,4 +233,3 @@ c.close()
 
 
 #print(str(json.loads(db)["response"]["items"][0]['id']))
-
