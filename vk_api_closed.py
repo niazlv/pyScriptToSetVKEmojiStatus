@@ -1,9 +1,14 @@
+# -*- coding: utf8 -*-
+
 #program updated and needed to upload github. new app id added. 01:23 19.12.2020
 
 import requests
 import sqlite3
 import json
 import datetime
+from datetime import datetime
+import urllib.request
+import re
 
 def _post(str, payload):
 	responce=requests.post(str, params=payload)
@@ -109,31 +114,25 @@ def set(status_id):
 
 	return json.loads(r.text)
 
-#пример вызова
-#db=post(app_ids[0])
 
-
-#test db json
-#db="""{"response":{"count":8,"items":[{"id":114,"name":"","images":[{"height":80,"url":"https:\/\/sun9-18.userapi.com\/7Gtu0nby4TjBv-X0sX8dTzWNeO44PWnRqe9IFQ\/8a3zbKzyU3k.png","width":80},{"height":60,"url":"https:\/\/sun1.ufanet.userapi.com\/snf9roGASjuN7-KrFd_nOku2t3uRC5eKYSzzzg\/VSlZSF8XyFo.png","width":60},{"height":40,"url":"https:\/\/sun9-73.userapi.com\/c6RzhcyD10S6Mk2s6Er6bd8O3p6EVxLM0-jLiQ\/CX_ZRGlczm8.png","width":40},{"height":30,"url":"https:\/\/sun9-6.userapi.com\/wY4OvVm9HGPMa3nTFuNpa94CF6StViwprs9FpA\/axmBl7tZmWs.png","width":30},{"height":20,"url":"https:\/\/sun9-6.userapi.com\/AUDFh5oZwYL89Dyoa-cRvB1GPc0cDWxGl7De2g\/C22lwN_h8BM.png","width":20}]},{"id":115,"name":"","images":[{"height":80,"url":"https:\/\/sun2.ufanet.userapi.com\/-z7Trcb0dgFl6L93J64EbWtKqt6kxY0_fIsSJQ\/nUZmj9iuNNU.png","width":80},{"height":60,"url":"https:\/\/sun9-71.userapi.com\/rTpQxk4iKUbkn9e9akUzt_7It1EX0a9axweG6A\/xwjKBLjnr74.png","width":60},{"height":40,"url":"https:\/\/sun1.ufanet.userapi.com\/kAW4zyvhG7AUPkv9_lp669Hc8OsJv_Mu2wWZ4g\/1AeJjMmxOys.png","width":40},{"height":30,"url":"https:\/\/sun9-55.userapi.com\/gJ0nCtwXoRVr9ttMlDhLoK8BYMJSFRFlFd5oTQ\/nWCP3SbSZf4.png","width":30},{"height":20,"url":"https:\/\/sun2.ufanet.userapi.com\/skAmlDoAV3ztd9VjpvhdBIrlJSe4Lbc_rMTh0A\/B5eXBtiwh2g.png","width":20}]},{"id":116,"name":"","images":[{"height":80,"url":"https:\/\/sun1.ufanet.userapi.com\/DBnyifGraFx93seIMVMUJ-1g6uS5GQhfI3cYxg\/icdP0ZrJtKs.png","width":80},{"height":60,"url":"https:\/\/sun9-47.userapi.com\/tYgu-lkol4AEw8COc4blXqkyzhb8WDLNtXJM5g\/5Q4FIfN6QBg.png","width":60},{"height":40,"url":"https:\/\/sun1.ufanet.userapi.com\/4c9RNx8UepXJFQC0_EQmjQh2dwKQJUFOa8hpBg\/GBxxwrm7QpI.png","width":40},{"height":30,"url":"https:\/\/sun9-65.userapi.com\/iZL-7_CAeLOgAw5BOhuhEoOAH1dQ4iHiI-VpFQ\/x4E7oBsxnRY.png","width":30},{"height":20,"url":"https:\/\/sun3.ufanet.userapi.com\/g5ItozkaSH0r8mlkWNeDtPf_SnK12dBw6cSfSw\/niWOudaRfCw.png","width":20}]},{"id":117,"name":"","images":[{"height":80,"url":"https:\/\/sun9-43.userapi.com\/t9BJTDISO9JU5hQ5W11LoTLVmv_3sz2xgdYvqA\/XcqgDWNoXWU.png","width":80},{"height":60,"url":"https:\/\/sun3.ufanet.userapi.com\/8O0YKiexXQQzzk3Ra5Baf02jbznOmnEh-5n4cw\/ILIEGDUJloY.png","width":60},{"height":40,"url":"https:\/\/sun9-53.userapi.com\/r5Gsusb6naxwoId5DEXUQz9HwmdQiL58bg0rUA\/jSZcik_7-h0.png","width":40},{"height":30,"url":"https:\/\/sun9-62.userapi.com\/C0nDvNtooXSncX8M7XxJQiQuzHlwVuBme-MC-Q\/DG9MShqz1Eo.png","width":30},{"height":20,"url":"https:\/\/sun9-68.userapi.com\/bDju0HiuzeIjNqY5AvhoE6FKsIDVDw4hDqPcmg\/wbiRV5VihJU.png","width":20}]},{"id":118,"name":"","images":[{"height":80,"url":"https:\/\/sun9-20.userapi.com\/dt8aDv2dGIIBWep2u8I5TCajM-sgifLYIszZtg\/GKZo8i0SwZ4.png","width":80},{"height":60,"url":"https:\/\/sun9-74.userapi.com\/OEkGwYb1i7Vkoq1gq9u-FcQKftyGkje3N-P1nQ\/kvJx0uYIpLc.png","width":60},{"height":40,"url":"https:\/\/sun9-67.userapi.com\/WMlh8Pwn9Y9yGH19uOEOrau80mupor4owsQbkw\/lcIdAZ2oKho.png","width":40},{"height":30,"url":"https:\/\/sun9-40.userapi.com\/N1jd_39HCKPmW7jru7JmtvKbZdqINtCf2icIlQ\/cCy0ezw22DU.png","width":30},{"height":20,"url":"https:\/\/sun9-36.userapi.com\/1lKP5F4qa3OSlwqkqIx5meLVxV5T5sqcPeyWkw\/WsloUuc2hlY.png","width":20}]},{"id":119,"name":"","images":[{"height":80,"url":"https:\/\/sun1.ufanet.userapi.com\/iV2meCWQyYPM3eERpD4AWhDzCY8zTb-fTc_1ng\/3Ugi6Ok4pME.png","width":80},{"height":60,"url":"https:\/\/sun9-32.userapi.com\/gVGf0VVow5Ck8tZI9YiH2dAcpRLznMm-7vf1mg\/Sk2qJqlO7zw.png","width":60},{"height":40,"url":"https:\/\/sun2.ufanet.userapi.com\/0OCxFz_bB7Dg9RoI4g_rYc20YEjgZBWS6bwtBA\/c2LoWHADq5U.png","width":40},{"height":30,"url":"https:\/\/sun9-2.userapi.com\/KU4Vww5HWRbeswSK72m-yHNDqTZtKYfj1wrbYg\/ytFuYr4Blpg.png","width":30},{"height":20,"url":"https:\/\/sun9-37.userapi.com\/SqSttn8n72Ut7BbMJEctYrCfhTbkI1HtrPVNDQ\/NXGxvKw_qZY.png","width":20}]},{"id":120,"name":"","images":[{"height":80,"url":"https:\/\/sun1.ufanet.userapi.com\/HAJsq-jDejSjQir2fmdWrJiumvEfSZK0VkR-nw\/oPNHVF5I33w.png","width":80},{"height":60,"url":"https:\/\/sun9-75.userapi.com\/NCEmIOenLUkkaeIY16OymJ9HNp9vMTda5eDZ9g\/DDr6jtLV-9Y.png","width":60},{"height":40,"url":"https:\/\/sun3.ufanet.userapi.com\/uBUl7Hd9r9pe0tEQLQTgYFmhY1Rvzt-_4SAbsg\/dwIsgf-yPH8.png","width":40},{"height":30,"url":"https:\/\/sun9-65.userapi.com\/nhlFeKsQpltPlLAR17z2uHqtwKPt68BVLUQ63w\/tSKbuFSbwdU.png","width":30},{"height":20,"url":"https:\/\/sun9-7.userapi.com\/MmY3zfAJUN7tMIVFH7mptwlKL4AtW3cqx2kqyw\/mQTJElNje9U.png","width":20}]},{"id":121,"name":"","images":[{"height":80,"url":"https:\/\/sun9-33.userapi.com\/RoGd25GyMrn6AywUM00Wpe6W0fjJ3KZugzta_A\/K0rUhFjlEmA.png","width":80},{"height":60,"url":"https:\/\/sun9-73.userapi.com\/5F1PRYI2w1nRJvNnynsVol4lmAtWyUgQfbR9UA\/vAyMr919ZUA.png","width":60},{"height":40,"url":"https:\/\/sun9-8.userapi.com\/WOrVXaW0TNDqG8oZ5l4z5xpRMrVGJ42yNx_b6g\/pEoveAh5qlc.png","width":40},{"height":30,"url":"https:\/\/sun9-10.userapi.com\/Nit9e2YBZxwkHh6Mwu5KkaCzVQD0EuWhv4CtkA\/rEj9yp864dk.png","width":30},{"height":20,"url":"https:\/\/sun9-60.userapi.com\/qFbDhvy6xWwkvCfIAc6wEkt_UP0Yw-wGxhhrhg\/h8rAYaJuhJI.png","width":20}]}]}}"""
-
-
-#try:
-#	for i in range(0, db["response"]["count"]):
-#		print("Id: "+str(db["response"]["items"][i]['id']))
-#		print("name: "+str(db["response"]["items"][i]['name']))
-#		print("Url: "+str(db["response"]["items"][i]['images'][0]['url']))
-#except Exception as e:
-#	print("except a json format: "+e)
-
-
+#подключение БД
 conn=sqlite3.connect('vk_status.getImageList.db')
 c=conn.cursor()
 
 
-choise='0'
-update_tokens='0'
 
+#Запрос на сервер для получения ip
+try:
+	res = urllib.request.urlopen('http://2ip.ru/').read()
+	ip=re.search(b'\d+\.\d+\.\d+\.\d+', res).	group().decode("utf-8") 
+except Exception as e:
+	print("запрос на 2ip.ru провален. текст: ",e)
 
+#инициализация
+choise=''
+update_tokens=''
+
+#меню
 settings=input("открыть отладочное меню?(y/n)")
 if settings=='y':
 	print('1. вы хотите обновить токены?')
@@ -159,37 +158,51 @@ try:
 	c.execute('''create table if not exists "personal" (
 	"app_id"	INTEGER,
 	"token"	TEXT,
-	"date"	TEXT
+	"date"	TEXT,
+	"ip"	TEXT
 	)''')
 	pass
 except Exception as e:
 	print("except at create Personal table")
 
-time=datetime.date.today()
+time=datetime.now()
 
 for i in range(0, len(app_ids)):
-	try:
-		basetime=c.execute(f'SELECT * FROM "personal" WHERE app_id="'+str(app_ids[i])+'";').fetchall()[0][2]
-		time_d=basetime[basetime.rfind('-')+1:]
-		time_m=basetime[basetime.find('-')+1:basetime.rfind('-')]
-	except Exception as e:
-		time_d=-1
-		time_m=-1
+		try:
+			basetime=c.execute(f'SELECT * FROM "personal" WHERE app_id="'+str(app_ids[i])+'";').fetchall()[0][2]
+			basetimedatetime=datetime.strptime(basetime, "%d-%m-%Y %H:%M")
 
-	if ((not is_findDB_exists('personal', 'app_id',app_ids[i])) or not (str(time.day)==time_d and time_m==str(time.month)) or update_tokens=='1'):
-		print('\n \n У вас истек или не обнаружен токен приложения: '+str(app_ids[i])+' требуется его получение, сейчас будет написана сыллка, вы должны раздрешить приложению доступ,потом когда будет написано, что нельзя никому её отправлять, скопируйте её сюда(это абсолютно безопасно, можете проверить исходник, этот файл). К сожалению токен живет 24 часа, по этому его переодически придется обновлять:( \n ')
-		print('https://oauth.vk.com/authorize?client_id='+str(app_ids[i])+'&scope=1024&redirect_uri=https://oauth.vk.com/blank.html&display=page&response_type=token&revoke=1 \n')
-		re=input('Вставте полученную ссылку: ')
-		token=re[re.find('access_token=')+13 : re.find('&')]
-		if not len(token)==85: 
-			print("Вы точно уверены, что ссылка содержит токен? Мы не смогли его вытащить")
-			token=input('Пожалуста, извлеките токен лично(скопируйте то, что между access_token= и &expires_in), вставте его сюда: ')
-		c.execute('''DELETE FROM 'personal' WHERE app_id = ?''', (app_ids[i],))
-		c.execute("""insert into 'personal' values (?,?,?)""",(
-		str(app_ids[i]),
-		token,
-		str(time)
-		))
+		except Exception as e:
+			print("time don't installed, error text: ",e)
+			basetimedatetime=datetime.strptime("1-11-2077 1:27", "%d-%m-%Y %H:%M")
+		try:
+			baseip=str(c.execute(f'SELECT * FROM "personal" WHERE app_id="'+str(app_ids[i])+'";').fetchall()[0][3])
+		except Exception as e:
+			baseip="0.0.0.0"
+			print('Не получилось получить ip. сообщение ошибки: ',e)
+		try:
+			time_delta=time-basetimedatetime
+		except Exception as e:
+			print('opps, delta dont')
+			time_delta=time
+
+
+
+		if ((not is_findDB_exists('personal', 'app_id',app_ids[i])) or (time_delta.total_seconds() // 3600)>=24 or update_tokens=='1' or not (ip==baseip)):
+			print('\n \n У вас истек или не обнаружен токен приложения: '+str(app_ids[i])+' требуется его получение, сейчас будет написана сыллка, вы должны раздрешить приложению доступ,потом когда будет написано, что нельзя никому её отправлять, скопируйте её сюда(это абсолютно безопасно, можете проверить исходник, этот файл). К сожалению токен живет 24 часа, по этому его переодически придется обновлять:( \n ')
+			print('https://oauth.vk.com/authorize?client_id='+str(app_ids[i])+'&scope=1024&redirect_uri=https://oauth.vk.com/blank.html&display=page&response_type=token&revoke=1 \n')
+			re=input('Вставте полученную ссылку: ')
+			token=re[re.find('access_token=')+13 : re.find('&')]
+			if not len(token)==85: 
+				print("Вы точно уверены, что ссылка содержит токен? Мы не смогли его вытащить")
+				token=input('Пожалуста, извлеките токен лично(скопируйте то, что между access_token= и &expires_in), вставте его сюда: ')
+			c.execute('''DELETE FROM 'personal' WHERE app_id = ?''', (app_ids[i],))
+			c.execute("""insert into 'personal' values (?,?,?,?)""",(
+			str(app_ids[i]),
+			token,
+			str(time.strftime("%d-%m-%Y %H:%M")),
+			ip
+			))
 
 conn.commit()
 
