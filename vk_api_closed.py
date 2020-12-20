@@ -132,6 +132,7 @@ except Exception as e:
 #инициализация
 choise=''
 update_tokens=''
+print_url=''
 
 #меню
 settings=input("открыть отладочное меню?(y/n)")
@@ -139,6 +140,7 @@ if settings=='y':
 	print('1. вы хотите обновить токены?')
 	print('2. вы хотите сбросить список таблицы?')
 	print('3. вы хотите сбросить персональные данные?(все сохраненные токены)')
+	print("4. Выводить ссылку эмодзи статуса")
 	print('0. выход')
 	choise=input()
 if choise=='1':
@@ -153,7 +155,8 @@ elif choise=='3':
 		c.execute('''DROP TABLE IF EXISTS 'personal';''')
 	except Exception as e:
 		print("personal info reset failed",e)
-		
+elif choise=='4':
+	print_url='1'
 try:
 	
 	c.execute('''create table if not exists "personal" (
@@ -229,7 +232,14 @@ try:
 	print("Вывод каждой строки \n")
 	for row in records:
 		print("ID:", row[0], " Имя:", row[1])
-	print("\n\n В списке присудствует пустые имена, это значит, что в запросе имя тоже было пустое, потестируйте, как будет выглядеть(в базе данных есть ссылки на картинки эмодзи, база на sqlite3) \n\n")
+		if print_url=='1':
+			print('url: ',row[3],"\n")
+	print("\n\n В списке присудствует пустые имена, это значит, что в запросе имя тоже было пустое, потестируйте, как будет выглядеть(в базе данных есть ссылки на картинки эмодзи, база на sqlite3)")
+	if not (print_url == '1'):
+		print("Вывод ссылок на эмодзи можно включить в отладочном меню\n\n")
+	else:
+		print("\n")
+
 	
 except Exception as e:
 	print("ошибка вывода списка, скорее всего он не создан. текст ошибки:",e)
