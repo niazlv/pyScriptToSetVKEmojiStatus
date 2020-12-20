@@ -127,6 +127,7 @@ try:
 	ip=re.search(b'\d+\.\d+\.\d+\.\d+', res).	group().decode("utf-8") 
 except Exception as e:
 	print("запрос на 2ip.ru провален. текст: ",e)
+	ip='192.168.99.1'
 
 #инициализация
 choise=''
@@ -169,14 +170,14 @@ time=datetime.now()
 
 for i in range(0, len(app_ids)):
 		try:
-			basetime=c.execute(f'SELECT * FROM "personal" WHERE app_id="'+str(app_ids[i])+'";').fetchall()[0][2]
+			basetime=c.execute(f'SELECT * FROM "personal" WHERE app_id="'+str(app_ids[i])+'" AND ip="'+ip+'";').fetchall()[0][2]
 			basetimedatetime=datetime.strptime(basetime, "%d-%m-%Y %H:%M")
 
 		except Exception as e:
 			print("time don't installed, error text: ",e)
 			basetimedatetime=datetime.strptime("1-11-2077 1:27", "%d-%m-%Y %H:%M")
 		try:
-			baseip=str(c.execute(f'SELECT * FROM "personal" WHERE app_id="'+str(app_ids[i])+'";').fetchall()[0][3])
+			baseip=str(c.execute(f'SELECT * FROM "personal" WHERE app_id="'+str(app_ids[i])+'" AND ip="'+ip+'";').fetchall()[0][3])
 		except Exception as e:
 			baseip="0.0.0.0"
 			print('Не получилось получить ip. сообщение ошибки: ',e)
@@ -196,7 +197,7 @@ for i in range(0, len(app_ids)):
 			if not len(token)==85: 
 				print("Вы точно уверены, что ссылка содержит токен? Мы не смогли его вытащить")
 				token=input('Пожалуста, извлеките токен лично(скопируйте то, что между access_token= и &expires_in), вставте его сюда: ')
-			c.execute('''DELETE FROM 'personal' WHERE app_id = ?''', (app_ids[i],))
+				c.execute('''DELETE FROM 'personal' WHERE app_id = ? AND ip=?''', (app_ids[i],ip))
 			c.execute("""insert into 'personal' values (?,?,?,?)""",(
 			str(app_ids[i]),
 			token,
@@ -207,7 +208,7 @@ for i in range(0, len(app_ids)):
 conn.commit()
 
 for i in range(0, len(app_ids)):
-	massapps[str(app_ids[i])]['access_token']=str(c.execute(f'SELECT * FROM "personal" WHERE app_id="'+str(app_ids[i])+'";').fetchall()[0][1])
+	massapps[str(app_ids[i])]['access_token']=str(c.execute(f'SELECT * FROM "personal" WHERE app_id="'+str(app_ids[i])+'" AND ip="'+ip+'";').fetchall()[0][1])
 
 
 
