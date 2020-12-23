@@ -255,5 +255,5 @@ conn.commit()
 
 c.close()
 
-
+input('Нажмите любую клавишу, чтобы закрыть программу...')
 #print(str(json.loads(db)["response"]["items"][0]['id']))
