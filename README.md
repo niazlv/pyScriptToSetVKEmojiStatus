@@ -30,6 +30,7 @@ __P.S__
 ```sh
 pip install requests
 ```
+
 (*необязательно*) Для создания __exe__ файла использовалась библиотека pyinstaller.
 ```sh
 pip install pyinstaller
@@ -38,6 +39,8 @@ pip install pyinstaller
 ```sh
 pyinstaller --onefile vk_api_closed.py
 ```
+Либо запускаем build.bat и он сам все сделает.
+
 через пару секунд у нас появилась куча папок. В папке dist находиться сгенерированный exe файл
 
 ## Release History
