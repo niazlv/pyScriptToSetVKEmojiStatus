@@ -1,7 +1,5 @@
 # -*- coding: utf8 -*-
 
-#program updated and needed to upload github. new app id added. 01:23 19.12.2020
-
 import requests
 import sqlite3
 import json
@@ -52,7 +50,9 @@ massapps={}
 #id приложений
 try:
 	with open('appids.txt', 'r') as f:
-		app_ids = f.read().splitlines()
+		g=f.read().splitlines()
+		#print(g)
+		app_ids = g
 except Exception as e:
 	print(e)
 	app_ids=['7362610']
@@ -115,9 +115,10 @@ def set(status_id):
 	return json.loads(r.text)
 	
 def checkValidurl(url) -> bool:
-	responce=requests.post(url)
-	responce=json.loads(responce.text)
 	try:
+		responce=requests.post(url)
+		responce=json.loads(responce.text)
+	
 		if(responce['error_description']=='application is disabled'):
 			return False
 	except Exception as e:
@@ -143,6 +144,7 @@ except Exception as e:
 choise=''
 update_tokens=''
 print_url=''
+info=False
 
 #меню
 settings=input("открыть отладочное меню?(y/n)")
@@ -151,6 +153,7 @@ if settings=='y':
 	print('2. вы хотите сбросить список таблицы?')
 	print('3. вы хотите сбросить персональные данные?(все сохраненные токены)')
 	print("4. Выводить ссылку эмодзи статуса")
+	print("5. вывести служебную информацию?(не рекоментуется к включению)")
 	print('0. выход')
 	choise=input()
 if choise=='1':
@@ -166,6 +169,9 @@ elif choise=='3':
 	except Exception as e:
 		print("personal info reset failed",e)
 elif choise=='4':
+	print_url='1'
+elif choise=='5':
+	info=True
 	print_url='1'
 try:
 	
@@ -187,20 +193,31 @@ for i in range(0, len(app_ids)):
 			basetimedatetime=datetime.strptime(basetime, "%d-%m-%Y %H:%M")
 
 		except Exception as e:
-			print("time don't installed, error text: ",e)
+			print("time don't installed for appid=",app_ids[i],"error text: ",e)
 			basetimedatetime=datetime.strptime("1-11-2077 1:27", "%d-%m-%Y %H:%M")
 		try:
 			baseip=str(c.execute(f'SELECT * FROM "personal" WHERE app_id="'+str(app_ids[i])+'" AND ip="'+ip+'";').fetchall()[0][3])
 		except Exception as e:
 			baseip="0.0.0.0"
-			print('Не получилось получить ip. сообщение ошибки: ',e)
+			print('Не получилось получить ip от приложения с appids=', app_ids[i],'сообщение ошибки: ',e)
 		try:
 			time_delta=time-basetimedatetime
 		except Exception as e:
 			print('opps, delta dont')
 			time_delta=time
-
-
+		for j in range (0,5):
+			if (time_delta.total_seconds() // 3600)>=24:
+				try:
+					c.execute('''DELETE FROM 'personal' WHERE app_id = ? AND ip=?''', (app_ids[i],ip))
+				except Exception as e:
+					print(app_ids[i],"time expired and falled him delete. e:",e)
+				time_delta= time
+		
+		if info:
+			print(baseip," ", ip)
+			print("update tokens var: ",update_tokens)
+			print("in personal table finded appids=",app_ids[i]," result:",is_findDB_exists('personal', 'app_id',app_ids[i]))
+			print("delta time >24?:",(time_delta.total_seconds() // 3600)>=24)
 
 		if ((not is_findDB_exists('personal', 'app_id',app_ids[i])) or (time_delta.total_seconds() // 3600)>=24 or update_tokens=='1' or not (ip==baseip)):
 			if checkValidurl('https://oauth.vk.com/authorize?client_id='+str(app_ids[i])+'&scope=1024&redirect_uri=https://oauth.vk.com/blank.html&display=page&response_type=token&revoke=1'):
@@ -231,7 +248,7 @@ for i in range(0, len(app_ids)):
 	try:
 	   massapps[str(app_ids[i])]['access_token']=str(c.execute(f'SELECT * FROM "personal" WHERE app_id="'+str(app_ids[i])+'" AND ip="'+ip+'";').fetchall()[0][1])
 	except Exception as e:
-	   print('access token не получен из базы, от приложения',app_ids[i])
+	   print('access token не получен из базы, от приложения',app_ids[i],'\n')
 	
 
 
