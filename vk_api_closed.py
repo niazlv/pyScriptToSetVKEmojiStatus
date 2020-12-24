@@ -205,13 +205,16 @@ for i in range(0, len(app_ids)):
 		except Exception as e:
 			print('opps, delta dont')
 			time_delta=time
-		for j in range (0,5):
-			if (time_delta.total_seconds() // 3600)>=24:
-				try:
-					c.execute('''DELETE FROM 'personal' WHERE app_id = ? AND ip=?''', (app_ids[i],ip))
-				except Exception as e:
-					print(app_ids[i],"time expired and falled him delete. e:",e)
-				time_delta= time
+		try:
+			for j in range (0,5):
+				if (time_delta.total_seconds() // 3600)>=24:
+					try:
+						c.execute('''DELETE FROM 'personal' WHERE app_id = ? AND ip=?''', (app_ids[i],ip))
+					except Exception as e:
+						print(app_ids[i],"time expired and falled him delete. e:",e)
+					time_delta= time
+		except Exception as e:
+			print(e)
 		
 		if info:
 			print(baseip," ", ip)
