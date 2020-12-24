@@ -113,6 +113,16 @@ def set(status_id):
 	print("response: "+str(r.status_code)+" set id: "+str(status_id)+" Name of emoji: "+name)#+str(db['response']['status']['name']))
 
 	return json.loads(r.text)
+	
+def checkValidurl(url) -> bool:
+	responce=requests.post(url)
+	responce=json.loads(responce.text)
+	try:
+		if(responce['error_description']=='application is disabled'):
+			return False
+	except Exception as e:
+		return True
+	return True
 
 
 #подключение БД
@@ -193,30 +203,45 @@ for i in range(0, len(app_ids)):
 
 
 		if ((not is_findDB_exists('personal', 'app_id',app_ids[i])) or (time_delta.total_seconds() // 3600)>=24 or update_tokens=='1' or not (ip==baseip)):
-			print('\n \n У вас истек или не обнаружен токен приложения: '+str(app_ids[i])+' требуется его получение, сейчас будет написана сыллка, вы должны раздрешить приложению доступ,потом когда будет написано, что нельзя никому её отправлять, скопируйте её сюда(это абсолютно безопасно, можете проверить исходник, этот файл). К сожалению токен живет 24 часа, по этому его переодически придется обновлять:( \n ')
-			print('https://oauth.vk.com/authorize?client_id='+str(app_ids[i])+'&scope=1024&redirect_uri=https://oauth.vk.com/blank.html&display=page&response_type=token&revoke=1 \n')
-			re=input('Вставте полученную ссылку: ')
-			token=re[re.find('access_token=')+13 : re.find('&')]
-			if not len(token)==85: 
-				print("Вы точно уверены, что ссылка содержит токен? Мы не смогли его вытащить")
-				token=input('Пожалуста, извлеките токен лично(скопируйте то, что между access_token= и &expires_in), вставте его сюда: ')
-				c.execute('''DELETE FROM 'personal' WHERE app_id = ? AND ip=?''', (app_ids[i],ip))
-			c.execute("""insert into 'personal' values (?,?,?,?)""",(
-			str(app_ids[i]),
-			token,
-			str(time.strftime("%d-%m-%Y %H:%M")),
-			ip
-			))
+			if checkValidurl('https://oauth.vk.com/authorize?client_id='+str(app_ids[i])+'&scope=1024&redirect_uri=https://oauth.vk.com/blank.html&display=page&response_type=token&revoke=1'):
+				print('\n \n У вас истек или не обнаружен токен приложения: '+str(app_ids[i])+' требуется его получение, сейчас будет написана сыллка, вы должны раздрешить приложению доступ,потом когда будет написано, что нельзя никому её отправлять, скопируйте её сюда(это абсолютно безопасно, можете проверить исходник, этот файл). К сожалению токен живет 24 часа, по этому его переодически придется обновлять:( \n ')
+				print('https://oauth.vk.com/authorize?client_id='+str(app_ids[i])+'&scope=1024&redirect_uri=https://oauth.vk.com/blank.html&display=page&response_type=token&revoke=1 \n')
+				re=input('Вставте полученную ссылку: ')
+				if re=='' or re=='-1':
+					print("\n пропускаю токен \n")
+				else:	
+					token=re[re.find('access_token=')+13 : re.find('&')]
+					if not len(token)==85: 
+						print("Вы точно уверены, что ссылка содержит токен? Мы не смогли его вытащить")
+						token=input('Пожалуста, извлеките токен лично(скопируйте то, что между access_token= и &expires_in), вставте его сюда: ')
+						c.execute('''DELETE FROM 'personal' WHERE app_id = ? AND ip=?''', (app_ids[i],ip))
+					c.execute("""insert into 'personal' values (?,?,?,?)""",(
+					str(app_ids[i]),
+					token,
+					str(time.strftime("%d-%m-%Y %H:%M")),
+					ip
+					))
 
-conn.commit()
+					conn.commit()
+			else:
+				print("\n appid",app_ids[i],'is not valid \n')
+
 
 for i in range(0, len(app_ids)):
-	massapps[str(app_ids[i])]['access_token']=str(c.execute(f'SELECT * FROM "personal" WHERE app_id="'+str(app_ids[i])+'" AND ip="'+ip+'";').fetchall()[0][1])
+	try:
+	   massapps[str(app_ids[i])]['access_token']=str(c.execute(f'SELECT * FROM "personal" WHERE app_id="'+str(app_ids[i])+'" AND ip="'+ip+'";').fetchall()[0][1])
+	except Exception as e:
+	   print('access token не получен из базы, от приложения',app_ids[i])
+	
 
 
 
-if input("Мне проверить новые эмодзи?(если запуск впервые, то соглашайтесь) (y/n)")=="y":
+if input("Мне проверить новые эмодзи?(если запуск впервые, то соглашайтесь) (y/n) ")=="y":
 	print("проверка на наличие новых эмодзи")
+	try:
+		c.execute('''DROP TABLE IF EXISTS 'Base';''')
+	except Exception as e:
+		print("table reset failed",e)
 	for i in range(0, len(app_ids)):
 		db=post(app_ids[i])
 		addtoDB(db,app_ids[i])
