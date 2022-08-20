@@ -1,0 +1,187 @@
+/* BASIC TYPOGRAPHY                       */
+/* from https://github.com/oxalorg/sakura */
+html {
+  font-size: 62.5%;
+  font-family: serif;
+}
+body {
+  font-size: 1.8rem;
+  line-height: 1.618;
+  max-width: 38em;
+  margin: auto;
+  /*color: #4a4a4a;
+  background-color: #f9f9f9;*/
+  padding: 0px;
+  max-width: inherit;
+  background: #fff;
+  color: #4a4a4a;
+}
+@media (max-width: 684px) {
+  body {
+    font-size: 1.53rem;
+  }
+}
+@media (max-width: 382px) {
+  body {
+    font-size: 1.35rem;
+  }
+}
+h1, h2, h3, h4, h5, h6 {
+  line-height: 1.1;
+  font-family: Verdana, Geneva, sans-serif;
+  font-weight: 700;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  -ms-word-break: break-all;
+  word-break: break-word;
+  -ms-hyphens: auto;
+  -moz-hyphens: auto;
+  -webkit-hyphens: auto;
+  hyphens: auto;
+}
+h1 {
+  font-size: 2.35em;
+}
+h2 {
+  font-size: 2em;
+}
+h3 {
+  font-size: 1.75em;
+}
+h4 {
+  font-size: 1.5em;
+}
+h5 {
+  font-size: 1.25em;
+}
+h6 {
+  font-size: 1em;
+}
+header, footer {
+  font-size: large;
+  text-align: center;
+  padding: 0.3em 0;
+  background-color: #4a4a4a;
+  color: #f9f9f9;
+}
+nav {
+  color: #555;
+  height: 53px;
+  /*text-align: center;*/
+  background: #eee;
+}
+main {
+  background: #f9f9f9;
+}
+aside {
+  background: #eee;
+}
+
+ul.nav{
+  margin-left: 0px;
+  padding-left: 0px;
+  padding-top: 1px;
+  padding-bottom: 1px;
+  list-style: none;
+}
+.nav li { 
+  /*float: left;*/
+  display: inline;
+}
+ul.nav a {
+  display: inline-block;
+  width: 5em;
+  padding:10px;
+  margin: 0 5px;
+  background-color: #f4f4f4;
+  border: 1px dashed #333;
+  text-decoration: none;
+  color: #333;
+  text-align: center;
+}
+ul.nav a:hover{
+  background-color: #333;
+  color: #f4f4f4;
+}
+summary::-webkit-details-marker{display:none;}
+summary::-moz-list-bullet{list-style-type:none;}
+summary::marker{display:none;} 
+summary {
+   display:inline-block;
+   padding: .3em .5em .3em .4em;
+   font-size:1.4em;
+   cursor: pointer;
+}
+summary:before {  
+  content: "+";
+  margin-right: .3em;
+}
+details[open] > summary:before {
+  content: "–";
+}
+summary ~ * {
+   padding:0 1em 0 1em;
+}
+summary:focus {
+  outline:0;
+  box-shadow: inset 0 0 1px rgba(0,0,0,0.3), inset 0 0 2px rgba(0,0,0,0.3);
+}
+details{
+  display:block;
+  margin-bottom: .5rem;
+}
+
+
+.switch-btn {
+  display: inline-block;
+  width: 72px; /* ширина */
+  height: 38px; /* высота */
+  border-radius: 19px; /* радиус скругления */
+  background: #bfbfbf; /* цвет фона */
+  z-index: 0;
+  margin: 0;
+  padding: 0;
+  border: none;
+  cursor: pointer;
+  position: relative;
+  transition-duration: 300ms; /* анимация */
+}
+.switch-btn::after {
+  content: "";
+  height: 32px; /* высота кнопки */
+  width: 32px; /* ширина кнопки */
+  border-radius: 17px;
+  background: #fff; /* цвет кнопки */
+  top: 3px; /* положение кнопки по вертикали относительно основы */
+  left: 3px; /* положение кнопки по горизонтали относительно основы */
+  transition-duration: 300ms; /* анимация */
+  position: absolute;
+  z-index: 1;
+}
+.switch-on {
+  background: #118c4e;
+}
+.switch-on::after {
+  left: 37px;
+}
+.settings {
+  text-align: left;
+  border: 1px solid #bbb;
+  padding: 10px;
+  background-color: #ccc;
+  border-radius: 5px;
+}
+.devmode {
+  border: 1px solid #999;
+  background-color: #aaa;
+  border-radius: 5px;
+  font-family: "Monotype Corsiva" Cursive;
+}
+.devmode > h2 {
+  position: relative;
+  top: -30px;
+  font-family: "Monotype Corsiva" Cursive;
+}
+.hidden-div {
+  display: none;
+}
