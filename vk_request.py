@@ -6,7 +6,7 @@
 #   description:                        #
 #       module for vk requests          #
 #   Created:    21.08.2022 00:48        #
-#   Modify:     21.08.2022 00:57        #
+#   Modify:     21.08.2022 01:15        #
 # # # # # # # # # # # # # # # # # # # # #
 
 import requests
@@ -17,7 +17,6 @@ def _post(str, payload):
     return responce
 
 def vk_api_request(method,ids,access_token)->json:
-    print("ids to get list= "+ids)
     payload={
     'api_id':ids,
     'access_token':access_token,
@@ -29,3 +28,16 @@ def vk_api_request(method,ids,access_token)->json:
     url="https://api.vk.com/method/"+payload['method']
     r=_post(url,payload)
     return json.loads(r.text)
+# respose:
+#   count: int
+#   items:
+#       [
+#           id: int
+#           name: str
+#           images:
+#               [
+#                   url: str
+#                   width: int
+#                   height: int
+#               ]
+#       ]
