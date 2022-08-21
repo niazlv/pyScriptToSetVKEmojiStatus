@@ -6,7 +6,7 @@
 #   description:                        #
 #       module for any functions        #
 #   Created:    21.08.2022 00:48        #
-#   Modify:     21.08.2022 01:15        #
+#   Modify:     21.08.2022 04:08        #
 # # # # # # # # # # # # # # # # # # # # #
 
 import vk_request

@@ -7,7 +7,7 @@
 #       module reads/writes data on     #
 #       the device                      #
 #   Created:    21.08.2022 00:48        #
-#   Modify:     21.08.2022 00:58        #
+#   Modify:     21.08.2022 04:14        #
 # # # # # # # # # # # # # # # # # # # # #
 
 # read data from file appids.txt and return readed data as list[str]
