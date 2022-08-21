@@ -12,7 +12,7 @@
 import requests
 import json
 
-def _post(str, payload):
+def _post(str, payload={}):
     responce=requests.post(str, params=payload)
     return responce
 

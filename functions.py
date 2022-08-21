@@ -9,9 +9,7 @@
 #   Modify:     21.08.2022 01:15        #
 # # # # # # # # # # # # # # # # # # # # #
 
-import json
-from os import access
-
+import vk_request
 
 methods={
     'getImageList':'status.getImageList',
@@ -28,8 +26,16 @@ def is_token_valid(token:str)->bool:
     else:
         return True
 
+def is_appid_valid(appid)->bool:
+    r = vk_request._post(sign_app_url(appid))
+    if(r.status_code == 200):
+        return True
+    elif(r.status_code == 401):
+        return False
+    print(r.text)
+    return True
+
 def get_data_from_url(tokenUrl:str)->list[str]:
-    # https://oauth.vk.com/blank.html#access_token=vk1.a.ZZcr0ejrjZH8pxnW_mgiWz3pDA2T9cVSkWrOuEyuBA7HOeXmFvguHoNtT2NGB6Xb4lGwjh6Llz0yvRz1YE4BM2TwiQMKNy-nUhFro6UEKtpY-41gZOHOjkCgZhLq1sM1y0N0Hp7wraG1uEdrJxGJ9CVtZ4uWTQQN5dxf3g1-V2Trim-aCiyBLXDhzn-BoUpu&expires_in=86400&user_id=64077789
     data = {
         'access_token':'',
         'expires_in':'',

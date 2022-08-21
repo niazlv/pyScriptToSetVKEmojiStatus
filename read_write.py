@@ -19,3 +19,38 @@ def readAppids()->list[str]:
     except Exception as e:
         print(e)
     return(app_ids)
+
+def writeAppids(appids:list[str])->bool:
+    try:
+        with open('appids.txt','w') as f:
+            for i in range(0,len(appids)):
+                f.write(appids[i]+'\n')
+    except Exception as e:
+        print(e)
+        return False
+    return True
+
+def appendAppid(appid)->bool:
+    try:
+        with open('appids.txt','r+') as f:
+            r = f.read().splitlines()
+            f.write(str(appid)+'\n')
+    except Exception as e:
+        print(e)
+        return False
+    return True
+
+def removeAppid(appid)->bool:
+    try:
+        with open('appids.txt','r+') as f:
+            app_ids = f.read().splitlines()
+    except Exception as e:
+        print(e)
+        return False
+    try:
+        app_ids.remove(appid)
+        writeAppids(app_ids)
+    except ValueError as e:
+        #print(e)
+        return False
+    return True
