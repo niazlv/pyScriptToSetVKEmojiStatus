@@ -23,6 +23,7 @@ app_ids = []
 arg = args.Args()
 
 arg.args()
+app_ids = arg.app_ids
 
 if(not arg.not_use_auto_appids):
     app_ids = read_write.readAppids()
